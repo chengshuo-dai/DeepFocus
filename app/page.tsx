@@ -2,13 +2,14 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Play, Clock, Video, CheckCircle, ListTodo, Trash2 } from 'lucide-react';
-import { createSession, getSessions, deleteSession, FocusSession } from '@/lib/store';
+import { Play, Clock, Video, CheckCircle, ListTodo, Trash2, Flame, CalendarDays, TrendingUp } from 'lucide-react';
+import { createSession, getSessions, deleteSession, getStats, FocusStats, FocusSession } from '@/lib/store';
 import { formatDistanceToNow } from 'date-fns';
 
 export default function Dashboard() {
   const router = useRouter();
   const [sessions, setSessions] = useState<FocusSession[]>(() => getSessions());
+  const [stats, setStats] = useState<FocusStats>(() => getStats());
   const [title, setTitle] = useState('');
   const [videoUrl, setVideoUrl] = useState('');
   const [totalDuration, setTotalDuration] = useState(120);
@@ -35,7 +36,29 @@ export default function Dashboard() {
     if (confirm('Delete this session?')) {
       deleteSession(id);
       setSessions(prev => prev.filter(s => s.id !== id));
+      setStats(getStats());
     }
+  };
+
+  const formatHours = (mins: number) => {
+    if (mins < 60) return `${mins}m`;
+    const h = Math.floor(mins / 60);
+    const m = mins % 60;
+    return m > 0 ? `${h}h ${m}m` : `${h}h`;
+  };
+
+  const statCards = [
+    { icon: Flame, label: 'Day Streak', value: stats.streakDays, suffix: 'days', color: 'orange' },
+    { icon: TrendingUp, label: 'Total Focus', value: formatHours(stats.totalFocusMinutes), suffix: '', color: 'emerald' },
+    { icon: CheckCircle, label: 'Completed', value: stats.completedSessions, suffix: 'sessions', color: 'blue' },
+    { icon: CalendarDays, label: 'Today', value: formatHours(stats.todayFocusMinutes), suffix: '', color: 'violet' },
+  ] as const;
+
+  const colorMap: Record<string, { bg: string; text: string; border: string }> = {
+    orange: { bg: 'bg-orange-500/10', text: 'text-orange-400', border: 'border-orange-500/20' },
+    emerald: { bg: 'bg-emerald-500/10', text: 'text-emerald-400', border: 'border-emerald-500/20' },
+    blue: { bg: 'bg-blue-500/10', text: 'text-blue-400', border: 'border-blue-500/20' },
+    violet: { bg: 'bg-violet-500/10', text: 'text-violet-400', border: 'border-violet-500/20' },
   };
 
   return (
@@ -51,12 +74,33 @@ export default function Dashboard() {
         </div>
       </header>
 
-      <main className="max-w-5xl mx-auto px-6 py-12 grid md:grid-cols-[1fr_350px] gap-12">
-        <div className="space-y-10">
+      <main className="max-w-5xl mx-auto px-6 py-10">
+        {/* ── Stats Bar ─────────────────────────── */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
+          {statCards.map(({ icon: Icon, label, value, suffix, color }) => {
+            const c = colorMap[color];
+            return (
+              <div
+                key={label}
+                className={`${c.bg} ${c.border} border rounded-2xl p-4 lg:p-5 hover:scale-[1.02] transition-transform`}
+              >
+                <Icon className={`w-5 h-5 ${c.text} mb-3`} />
+                <div className={`text-2xl lg:text-3xl font-bold tracking-tight text-zinc-100`}>
+                  {value}<span className="text-lg font-normal text-zinc-500 ml-1">{suffix}</span>
+                </div>
+                <div className="text-xs text-zinc-500 mt-1">{label}</div>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* ── Content: Form + Sessions ──────────── */}
+        <div className="grid md:grid-cols-[1fr_350px] gap-12">
+        <div className="space-y-8">
           <div>
-            <h1 className="text-4xl font-bold tracking-tight mb-3">Build your patience.</h1>
-            <p className="text-zinc-400 text-lg max-w-xl">
-              Break down long videos or daunting tasks into manageable focus sprints. 
+            <h1 className="text-3xl font-bold tracking-tight mb-2">Build your patience.</h1>
+            <p className="text-zinc-400 max-w-xl">
+              Break down long videos or daunting tasks into manageable focus sprints.
               Stay engaged, take structured breaks, and actually finish what you start.
             </p>
           </div>
@@ -179,7 +223,12 @@ export default function Dashboard() {
             </div>
           )}
         </div>
+        </div>
       </main>
+
+      <footer className="max-w-5xl mx-auto px-6 pb-8 text-center text-xs text-zinc-600">
+        © {new Date().getFullYear()} DeepFocus by Lucas Dai. All rights reserved.
+      </footer>
     </div>
   );
 }
