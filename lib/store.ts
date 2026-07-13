@@ -59,3 +59,55 @@ export const updateSession = (id: string, updates: Partial<FocusSession>): Focus
   localStorage.setItem('deepfocus_sessions', JSON.stringify(sessions));
   return updatedSession;
 };
+
+// ── Statistics ──────────────────────────────────────
+export interface FocusStats {
+  totalFocusMinutes: number;
+  completedSessions: number;
+  streakDays: number;
+  todayFocusMinutes: number;
+}
+
+export function getStats(): FocusStats {
+  const sessions = getSessions();
+  const now = new Date();
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+
+  const completedSessions = sessions.filter(s => s.status === 'completed').length;
+
+  let totalFocusMinutes = 0;
+  let todayFocusMinutes = 0;
+
+  // Per-day tracking for streak calculation
+  const dayMap = new Map<string, number>(); // dateKey → total minutes that day
+
+  for (const s of sessions) {
+    const sessionFocus = s.completedChunks * s.chunkDuration;
+    totalFocusMinutes += sessionFocus;
+
+    const d = new Date(s.updatedAt);
+    const dayKey = `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`;
+    dayMap.set(dayKey, (dayMap.get(dayKey) || 0) + sessionFocus);
+
+    // Today
+    const sessionDay = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+    if (sessionDay.getTime() === today.getTime()) {
+      todayFocusMinutes += sessionFocus;
+    }
+  }
+
+  // Streak: count consecutive days backwards from today
+  let streakDays = 0;
+  const oneDay = 86400000;
+  for (let i = 0; i < 365; i++) {
+    const check = new Date(today.getTime() - i * oneDay);
+    const key = `${check.getFullYear()}-${check.getMonth()}-${check.getDate()}`;
+    if ((dayMap.get(key) || 0) > 0) {
+      streakDays++;
+    } else if (i > 0) {
+      break; // chain broken (allow today to be 0)
+    }
+  }
+
+  return { totalFocusMinutes, completedSessions, streakDays, todayFocusMinutes };
+}
