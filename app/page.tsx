@@ -6,6 +6,7 @@ import { Play, Clock, Video, CheckCircle, ListTodo, Trash2, Flame, CalendarDays,
 import { createSession, getSessions, deleteSession, getStats, FocusStats, FocusSession } from '@/lib/store';
 import { formatDistanceToNow } from 'date-fns';
 
+
 export default function Dashboard() {
   const router = useRouter();
   const [sessions, setSessions] = useState<FocusSession[]>(() => getSessions());
@@ -179,12 +180,12 @@ export default function Dashboard() {
           </form>
         </div>
 
-        <div className="space-y-6">
-          <h2 className="text-xl font-semibold tracking-tight flex items-center gap-2">
+        <div className="flex flex-col min-h-0">
+          <h2 className="text-xl font-semibold tracking-tight flex items-center gap-2 shrink-0 mb-6">
             <Clock className="w-5 h-5 text-zinc-500" />
             Recent Sessions
           </h2>
-          
+
           {sessions.length === 0 ? (
             <div className="bg-zinc-900/50 border border-zinc-800/50 border-dashed rounded-2xl p-8 text-center text-zinc-500">
               <ListTodo className="w-8 h-8 mx-auto mb-3 opacity-50" />
@@ -192,7 +193,7 @@ export default function Dashboard() {
               <p className="text-sm mt-1">Start your first focus sprint!</p>
             </div>
           ) : (
-            <div className="space-y-3">
+            <div className="space-y-3 max-h-[55vh] overflow-y-auto pr-1">
               {sessions.map(session => (
                 <div
                   key={session.id}

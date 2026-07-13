@@ -4,6 +4,7 @@ import { useEffect, useState, useCallback } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { getSession, updateSession, FocusSession } from '@/lib/store';
 import { createAmbientSound, SoundType } from '@/lib/ambient-sounds';
+
 import { Play, Pause, SkipForward, ArrowLeft, CheckCircle, Save, Video, Maximize, Minimize } from 'lucide-react';
 
 // Extract YouTube video ID from various URL formats (watch, short link, embed, shorts, live)

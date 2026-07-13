@@ -22,8 +22,7 @@ const nextConfig: NextConfig = {
   // output: 'standalone' — removed for Vercel (Vercel uses its own optimized build)
   transpilePackages: ['motion'],
   webpack: (config, {dev}) => {
-    // HMR is disabled in AI Studio via DISABLE_HMR env var.
-    // Do not modifyâfile watching is disabled to prevent flickering during agent edits.
+    // Disable file watching when HMR is turned off via env var
     if (dev && process.env.DISABLE_HMR === 'true') {
       config.watchOptions = {
         ignored: /.*/,

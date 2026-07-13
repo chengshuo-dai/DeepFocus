@@ -1,20 +1,35 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://ai.google.dev/static/site-assets/images/share-ais-513315318.png" />
-</div>
+# DeepFocus
 
-# Run and deploy your AI Studio app
+Build your patience. Break down long videos or daunting tasks into manageable focus sprints.
 
-This contains everything you need to run your app locally.
+## Features
 
-View your app in AI Studio: https://ai.studio/apps/0414e218-98a6-4661-902a-274b47bbe6ff
+- **Focus Sprints** — Pomodoro-style timer with customizable focus/break durations
+- **YouTube Embedding** — Watch tutorial videos while staying in focus mode
+- **Ambient Sounds** — Rain, forest, and cafe background sounds via Web Audio API
+- **Immersive Mode** — Fullscreen dark mode with only the timer visible
+- **Circular Progress Ring** — SVG ring with green→yellow→red gradient
+- **Active Notes** — Auto-saving notes with debounce persistence
+- **Session Management** — Create, complete, and delete focus sessions
+- **Statistics Dashboard** — Streak tracking, total focus time, daily stats
+
+## Tech Stack
+
+- Next.js 15, React 19, TypeScript
+- Tailwind CSS 4, Lucide React icons
+- LocalStorage (no backend required)
 
 ## Run Locally
 
-**Prerequisites:**  Node.js
+```bash
+npm install
+npm run dev
+```
 
+## Deploy
 
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+Ready for Vercel — no environment variables needed.
+
+---
+
+© 2025 Lucas Dai. All rights reserved.
